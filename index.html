@@ -368,9 +368,7 @@
                 </div>
             </div>
             <div class="question-text" id="questionText">Загрузка...</div>
-            <div class="options-grid" id="optionsGrid">
-                <!-- варианты ответов -->
-            </div>
+            <div class="options-grid" id="optionsGrid"></div>
             <div class="input-area">
                 <input type="text" id="answerInput" class="answer-input" placeholder="Введи правильный ответ..." autocomplete="off">
                 <div class="action-row">
@@ -391,7 +389,7 @@
 
     <script>
         (function() {
-            // ================= БАЗА ВОПРОСОВ (РАСШИРЕННАЯ) =================
+            // ================= БАЗА ВОПРОСОВ =================
             const questionBank = [
                 // ===== Linux =====
                 { question: "Какая команда в Linux используется для просмотра прав доступа к файлу?", 
@@ -630,20 +628,11 @@
                   options: ["Совместная работа red и blue команд", "Тип firewall", "Антивирус", "Сетевой протокол"], answer: "Совместная работа red и blue команд" }
             ];
 
-            // ================= РАНГИ =================
-            const RANKS = [
-                { name: 'Interna', minScore: 0, maxScore: 4 },
-                { name: 'Junior', minScore: 5, maxScore: 9 },
-                { name: 'Middle', minScore: 10, maxScore: 14 },
-                { name: 'Senior', minScore: 15, maxScore: 20 }
-            ];
-
             // ================= СОСТОЯНИЕ =================
             let currentQuestions = [];
             let currentIndex = 0;
             let score = 0;
             let answered = false;
-            let currentRank = 'Interna';
 
             // DOM элементы
             const startScreen = document.getElementById('startScreen');
@@ -667,16 +656,24 @@
 
             // ================= ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =================
             function shuffleArray(arr) {
-                for (let i = arr.length - 1; i > 0; i--) {
+                const a = [...arr];
+                for (let i = a.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
-                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                    [a[i], a[j]] = [a[j], a[i]];
                 }
-                return arr;
+                return a;
             }
 
+            // Выбираем 20 случайных вопросов и перемешиваем варианты ответов у каждого
             function pickRandomQuestions(count = 20) {
-                const shuffled = shuffleArray([...questionBank]);
-                return shuffled.slice(0, count);
+                const shuffledBank = shuffleArray(questionBank);
+                const selected = shuffledBank.slice(0, count);
+                // перемешиваем варианты ответов внутри каждого вопроса
+                return selected.map(q => ({
+                    question: q.question,
+                    options: shuffleArray(q.options),
+                    answer: q.answer
+                }));
             }
 
             function getRankByScore(correctCount, total = 20) {
@@ -688,7 +685,6 @@
 
             function updateRankDisplay() {
                 const rank = getRankByScore(score, 20);
-                currentRank = rank;
                 if (currentRankStart) currentRankStart.textContent = rank;
                 if (rankLabelSmall) rankLabelSmall.textContent = rank;
 
@@ -783,7 +779,6 @@
                 currentIndex = 0;
                 score = 0;
                 answered = false;
-                currentRank = 'Interna';
 
                 totalQuestionsCount.textContent = currentQuestions.length;
                 totalQNumSpan.textContent = currentQuestions.length;
