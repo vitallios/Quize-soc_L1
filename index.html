@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOC L1 · Квиз подготовки</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0b0f1c 0%, #141b2b 100%);
+            font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            color: #eef2ff;
+        }
+
+        .app {
+            max-width: 860px;
+            width: 100%;
+            background: rgba(18, 25, 40, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 2.5rem;
+            padding: 2rem 2rem 2.5rem;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 255, 255, 0.1);
+            border: 1px solid #2d3a5e;
+            transition: all 0.2s;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(130deg, #a6e3ff, #6ab0ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge {
+            background: #1f2b45;
+            border-radius: 100px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #8cc9ff;
+            letter-spacing: 0.5px;
+            border: 1px solid #2e4b7a;
+        }
+
+        .description {
+            color: #9bb5e0;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+            border-left: 4px solid #2e8aff;
+            padding-left: 1.2rem;
+        }
+
+        .rank-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0e1526;
+            padding: 0.8rem 1.5rem;
+            border-radius: 100px;
+            margin-bottom: 2rem;
+            border: 1px solid #253452;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+        }
+
+        .rank-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #b8d0ff;
+            font-weight: 500;
+        }
+
+        .rank-value {
+            background: #1e2f50;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #c4e2ff;
+            text-shadow: 0 0 10px rgba(0, 180, 255, 0.4);
+            letter-spacing: 1px;
+            border: 1px solid #3760a0;
+        }
+
+        .progress-indicator {
+            font-weight: 500;
+            color: #7d9fd3;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #1e3a8a, #1e40af);
+            border: none;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            padding: 1rem 2.5rem;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 8px 20px rgba(20, 80, 200, 0.4);
+            border: 1px solid #4b7fd9;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #1e4b9e, #2563eb);
+            box-shadow: 0 12px 28px rgba(37, 99, 235, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 1rem 0 0.5rem;
+        }
+
+        .quiz-screen {
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+            color: #7c9bd6;
+            font-weight: 500;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.4;
+            background: #0b101f;
+            padding: 1.5rem 2rem;
+            border-radius: 2rem;
+            border: 1px solid #2f4170;
+            color: #e0edff;
+            word-break: break-word;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.9rem;
+        }
+
+        .option-item {
+            background: #131e31;
+            border: 1px solid #2e4168;
+            padding: 0.9rem 1.2rem;
+            border-radius: 60px;
+            font-size: 1rem;
+            color: #cad9ff;
+            transition: all 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            word-break: break-word;
+        }
+
+        .option-item::before {
+            content: "▹";
+            color: #4f8cff;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .answer-input {
+            background: #0d1422;
+            border: 2px solid #2c3f66;
+            border-radius: 60px;
+            padding: 1rem 1.6rem;
+            font-size: 1.1rem;
+            color: #f0f6ff;
+            outline: none;
+            transition: all 0.2s;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        .answer-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+        }
+
+        .answer-input::placeholder {
+            color: #4e6492;
+            font-weight: 400;
+        }
+
+        .action-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 0.4rem;
+        }
+
+        .feedback {
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            font-size: 0.95rem;
+        }
+
+        .feedback.correct {
+            background: #0f3b2b;
+            color: #7ef0b0;
+            border: 1px solid #2e9e6b;
+        }
+
+        .feedback.incorrect {
+            background: #3b0f1a;
+            color: #ffa1b0;
+            border: 1px solid #c24a5a;
+        }
+
+        .rank-progress {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #849dc9;
+        }
+
+        .rank-bar {
+            width: 120px;
+            height: 6px;
+            background: #1e2b44;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .rank-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #3b82f6, #a6e3ff);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .result-screen {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .final-rank {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(130deg, #d4eaff, #6ab0ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+
+        .score-text {
+            font-size: 1.4rem;
+            color: #b8d0ff;
+            background: #0b101f;
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+        }
+
+        .footer-note {
+            font-size: 0.8rem;
+            color: #4e6492;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 550px) {
+            .app {
+                padding: 1.5rem;
+            }
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            .question-text {
+                font-size: 1.2rem;
+                padding: 1.2rem;
+            }
+            h1 {
+                font-size: 1.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app" id="app">
+        <!-- Стартовый экран -->
+        <div id="startScreen" class="start-screen">
+            <h1>
+                SOC L1 <span class="badge">quiz</span>
+            </h1>
+            <div class="description">
+                Подготовка к работе аналитиком SOC L1. <br>
+                20 случайных вопросов: Linux, сети, SIEM, инциденты.
+            </div>
+            <div class="rank-panel">
+                <div class="rank-label">
+                    <span>🏅 Твой ранг:</span>
+                    <span class="rank-value" id="currentRankStart">Interna</span>
+                </div>
+                <div class="progress-indicator">
+                    <span id="totalQuestionsCount">20</span> вопросов
+                </div>
+            </div>
+            <button class="btn" id="startBtn">🚀 Старт</button>
+            <div class="footer-note">правильный ответ нужно ввести в поле</div>
+        </div>
+
+        <!-- Экран квиза -->
+        <div id="quizScreen" class="quiz-screen hidden">
+            <div class="question-header">
+                <span>Вопрос <span id="currentQNum">1</span>/<span id="totalQNum">20</span></span>
+                <div class="rank-progress">
+                    <span id="rankLabelSmall">Interna</span>
+                    <div class="rank-bar">
+                        <div class="rank-fill" id="rankProgressFill"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="question-text" id="questionText">Загрузка...</div>
+            <div class="options-grid" id="optionsGrid">
+                <!-- варианты ответов -->
+            </div>
+            <div class="input-area">
+                <input type="text" id="answerInput" class="answer-input" placeholder="Введи правильный ответ..." autocomplete="off">
+                <div class="action-row">
+                    <button class="btn" id="submitAnswerBtn">Ответить</button>
+                    <span id="feedbackMessage" class="feedback"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран результатов -->
+        <div id="resultScreen" class="result-screen hidden">
+            <h2 style="font-size: 2rem; font-weight: 600; color: #c7ddff;">Твой результат</h2>
+            <div class="final-rank" id="finalRankDisplay">Interna</div>
+            <div class="score-text" id="finalScoreDisplay">0 / 20</div>
+            <button class="btn" id="restartBtn">🔁 Пройти заново</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ================= БАЗА ВОПРОСОВ (РАСШИРЕННАЯ) =================
+            const questionBank = [
+                // ===== Linux =====
+                { question: "Какая команда в Linux используется для просмотра прав доступа к файлу?", 
+                  options: ["ls -l", "chmod", "chown", "stat"], answer: "ls -l" },
+                { question: "Какой файл в Linux содержит информацию о пользователях системы?", 
+                  options: ["/etc/passwd", "/etc/shadow", "/etc/group", "/etc/users"], answer: "/etc/passwd" },
+                { question: "Какая команда покажет последние 10 строк файла /var/log/syslog?", 
+                  options: ["tail -n 10 /var/log/syslog", "head -10 /var/log/syslog", "cat /var/log/syslog | last", "grep -n 10 /var/log/syslog"], answer: "tail -n 10 /var/log/syslog" },
+                { question: "Что делает команда `grep -r 'error' /var/log`?", 
+                  options: ["Ищет 'error' во всех файлах рекурсивно", "Ищет 'error' только в начале файлов", "Удаляет строки с 'error'", "Считает количество ошибок"], answer: "Ищет 'error' во всех файлах рекурсивно" },
+                { question: "Какой командой можно посмотреть активные сетевые соединения?", 
+                  options: ["netstat -tulnp", "ifconfig", "ping", "traceroute"], answer: "netstat -tulnp" },
+                { question: "Что означает флаг `-R` в команде chmod?", 
+                  options: ["рекурсивно", "только чтение", "сбросить права", "переименовать"], answer: "рекурсивно" },
+                { question: "Где в Linux обычно хранятся логи аутентификации?", 
+                  options: ["/var/log/auth.log", "/var/log/syslog", "/var/log/messages", "/var/log/secure"], answer: "/var/log/auth.log" },
+                { question: "Какая команда покажет список запущенных процессов в реальном времени?", 
+                  options: ["top", "ps aux", "jobs", "systemctl"], answer: "top" },
+                { question: "Что делает `kill -9 PID`?", 
+                  options: ["Принудительно завершает процесс", "Останавливает процесс", "Перезапускает процесс", "Меняет приоритет процесса"], answer: "Принудительно завершает процесс" },
+                { question: "Какой файл содержит информацию о смонтированных файловых системах?", 
+                  options: ["/etc/mtab", "/etc/fstab", "/proc/mounts", "/etc/mounts"], answer: "/etc/mtab" },
+                { question: "Какая команда покажет информацию о дисковом пространстве в удобочитаемом виде?", 
+                  options: ["df -h", "du -h", "ls -lh", "fdisk -l"], answer: "df -h" },
+                { question: "Что делает команда `chmod 755 file`?", 
+                  options: ["Владелец: rwx, группа: r-x, остальные: r-x", "Владелец: rwx, группа: rw-, остальные: r--", "Все: rwx", "Владелец: rw-, группа: r--, остальные: ---"], answer: "Владелец: rwx, группа: r-x, остальные: r-x" },
+                { question: "Какая команда найдёт все файлы с расширением .log в /var?", 
+                  options: ["find /var -name '*.log'", "ls /var/*.log", "grep .log /var", "locate /var/*.log"], answer: "find /var -name '*.log'" },
+                { question: "Что показывает команда `who`?", 
+                  options: ["Кто сейчас в системе", "Историю команд", "Список всех пользователей", "Информацию о текущем пользователе"], answer: "Кто сейчас в системе" },
+                { question: "Какой командой посмотреть историю команд текущего пользователя?", 
+                  options: ["history", "cat ~/.bash_history", "last", "journalctl"], answer: "history" },
+                { question: "Что делает `sudo`?", 
+                  options: ["Выполняет команду с правами root", "Запускает новый shell", "Меняет пользователя", "Перезагружает систему"], answer: "Выполняет команду с правами root" },
+                { question: "Какая команда покажет размер директории /var/log?", 
+                  options: ["du -sh /var/log", "df -h /var/log", "ls -lh /var/log", "stat /var/log"], answer: "du -sh /var/log" },
+                { question: "Что такое inode в Linux?", 
+                  options: ["Структура, хранящая метаданные файла", "Имя файла", "Тип файловой системы", "Раздел диска"], answer: "Структура, хранящая метаданные файла" },
+                { question: "Какая команда используется для сравнения двух файлов?", 
+                  options: ["diff", "cmp", "comm", "все перечисленные"], answer: "все перечисленные" },
+                { question: "Что означает `chmod +x script.sh`?", 
+                  options: ["Добавляет права на выполнение", "Удаляет права на выполнение", "Делает файл только для чтения", "Меняет владельца"], answer: "Добавляет права на выполнение" },
+                { question: "Какой файл в Linux содержит настройки cron?", 
+                  options: ["/etc/crontab", "/etc/cron.d", "/var/spool/cron", "все перечисленные"], answer: "все перечисленные" },
+                { question: "Что покажет команда `journalctl -u sshd`?", 
+                  options: ["Логи службы sshd", "Список подключений SSH", "Конфигурацию SSH", "Ошибки SSH"], answer: "Логи службы sshd" },
+                { question: "Какая команда покажет список всех пользователей в системе?", 
+                  options: ["cut -d: -f1 /etc/passwd", "who", "w", "users"], answer: "cut -d: -f1 /etc/passwd" },
+                { question: "Что делает команда `chown user:group file`?", 
+                  options: ["Меняет владельца и группу файла", "Меняет права доступа", "Переименовывает файл", "Копирует файл"], answer: "Меняет владельца и группу файла" },
+                { question: "Какая команда в Linux покажет открытые файлы процесса с PID 1234?", 
+                  options: ["lsof -p 1234", "ps -p 1234", "ls -l /proc/1234", "cat /proc/1234/fd"], answer: "lsof -p 1234" },
+
+                // ===== SOC / SIEM / Security =====
+                { question: "Что такое SIEM?", 
+                  options: ["Система управления событиями и информацией безопасности", "Антивирус", "Межсетевой экран", "Система обнаружения вторжений"], answer: "Система управления событиями и информацией безопасности" },
+                { question: "Какой уровень SOC отвечает за первичный анализ инцидентов?", 
+                  options: ["L1", "L2", "L3", "L0"], answer: "L1" },
+                { question: "Что такое IOC?", 
+                  options: ["Индикатор компрометации", "Центр интернет-безопасности", "Протокол обмена", "Тип атаки"], answer: "Индикатор компрометации" },
+                { question: "Какой протокол чаще всего используется для передачи логов в SIEM?", 
+                  options: ["Syslog", "HTTP", "FTP", "SMTP"], answer: "Syslog" },
+                { question: "Что такое ложноположительное срабатывание (False Positive)?", 
+                  options: ["Событие, которое кажется инцидентом, но им не является", "Пропущенный инцидент", "Критическая уязвимость", "Ошибка в логах"], answer: "Событие, которое кажется инцидентом, но им не является" },
+                { question: "Какой из перечисленных инструментов является SIEM?", 
+                  options: ["Splunk", "Wireshark", "Nmap", "Metasploit"], answer: "Splunk" },
+                { question: "Что такое MITRE ATT&CK?", 
+                  options: ["База знаний о тактиках и техниках атакующих", "Стандарт шифрования", "Протокол аутентификации", "Тип firewall"], answer: "База знаний о тактиках и техниках атакующих" },
+                { question: "Что такое фишинг?", 
+                  options: ["Мошенничество для получения конфиденциальных данных", "Сканирование портов", "Подбор паролей", "SQL-инъекция"], answer: "Мошенничество для получения конфиденциальных данных" },
+                { question: "Что такое DDoS-атака?", 
+                  options: ["Распределённая атака на отказ в обслуживании", "Атака на базу данных", "Кража пароля", "Подмена DNS"], answer: "Распределённая атака на отказ в обслуживании" },
+                { question: "Что такое IDS?", 
+                  options: ["Система обнаружения вторжений", "Система предотвращения вторжений", "Межсетевой экран", "Антивирус"], answer: "Система обнаружения вторжений" },
+                { question: "Что такое IPS?", 
+                  options: ["Система предотвращения вторжений", "Система обнаружения вторжений", "Протокол безопасности", "Тип шифрования"], answer: "Система предотвращения вторжений" },
+                { question: "Что такое EDR?", 
+                  options: ["Endpoint Detection and Response", "Enterprise Data Recovery", "External Defense Router", "Event Data Repository"], answer: "Endpoint Detection and Response" },
+                { question: "Что такое XDR?", 
+                  options: ["Extended Detection and Response", "XML Data Router", "External Data Repository", "Cross-domain Detection"], answer: "Extended Detection and Response" },
+                { question: "Что такое SOAR?", 
+                  options: ["Security Orchestration, Automation and Response", "System Operations and Recovery", "Secure Online Access Router", "Service Oriented Architecture"], answer: "Security Orchestration, Automation and Response" },
+                { question: "Что такое threat intelligence?", 
+                  options: ["Разведка угроз", "Антивирусная база", "Список уязвимостей", "Межсетевой экран"], answer: "Разведка угроз" },
+                { question: "Что такое TTP в контексте кибербезопасности?", 
+                  options: ["Tactics, Techniques and Procedures", "Total Transfer Protocol", "Time To Penetration", "Threat Tracking Platform"], answer: "Tactics, Techniques and Procedures" },
+                { question: "Что такое zero-day уязвимость?", 
+                  options: ["Уязвимость, для которой нет патча", "Уязвимость нулевого дня недели", "Ошибка в нулевом байте", "Атака в полночь"], answer: "Уязвимость, для которой нет патча" },
+                { question: "Что такое ransomware?", 
+                  options: ["Вирус-вымогатель", "Антивирус", "Тип firewall", "Протокол шифрования"], answer: "Вирус-вымогатель" },
+                { question: "Что такое SQL-инъекция?", 
+                  options: ["Внедрение SQL-кода в запрос", "Атака на сервер БД через SSH", "Кража cookies", "Переполнение буфера"], answer: "Внедрение SQL-кода в запрос" },
+                { question: "Что такое XSS?", 
+                  options: ["Cross-Site Scripting", "Cross-System Security", "XML Secure Socket", "Extended Security Standard"], answer: "Cross-Site Scripting" },
+                { question: "Что такое CSRF?", 
+                  options: ["Cross-Site Request Forgery", "Cross-System Resource Firewall", "Central Security Response Framework", "Client-Side Request Filter"], answer: "Cross-Site Request Forgery" },
+                { question: "Что такое APT?", 
+                  options: ["Advanced Persistent Threat", "Automatic Penetration Test", "Anti-Phishing Toolkit", "Advanced Protocol Tunneling"], answer: "Advanced Persistent Threat" },
+                { question: "Что такое CVE?", 
+                  options: ["Common Vulnerabilities and Exposures", "Central Virus Encyclopedia", "Cyber Vulnerability Exploit", "Critical Vector Engine"], answer: "Common Vulnerabilities and Exposures" },
+                { question: "Что такое CVSS?", 
+                  options: ["Common Vulnerability Scoring System", "Central Virus Scan Service", "Cyber Vulnerability Security Standard", "Critical Vector Scoring System"], answer: "Common Vulnerability Scoring System" },
+                { question: "Что такое IoC в контексте SOC?", 
+                  options: ["Indicator of Compromise", "Index of Ciphers", "Internal Operations Center", "Incident of Concern"], answer: "Indicator of Compromise" },
+                { question: "Что такое триаж инцидента?", 
+                  options: ["Сортировка и приоритизация инцидентов", "Удаление инцидента", "Эскалация инцидента", "Документирование инцидента"], answer: "Сортировка и приоритизация инцидентов" },
+                { question: "Что такое playbook в SOC?", 
+                  options: ["Набор инструкций для реагирования на инциденты", "Игровой сценарий", "Тип атаки", "Журнал событий"], answer: "Набор инструкций для реагирования на инциденты" },
+                { question: "Что такое threat hunting?", 
+                  options: ["Проактивный поиск угроз", "Автоматическое сканирование", "Реакция на инцидент", "Установка патчей"], answer: "Проактивный поиск угроз" },
+                { question: "Что такое SOC?", 
+                  options: ["Security Operations Center", "System Operations Control", "Secure Online Connection", "Server Operating Console"], answer: "Security Operations Center" },
+                { question: "Что такое MTTD?", 
+                  options: ["Mean Time To Detect", "Mean Time To Deploy", "Maximum Threat Tolerance Duration", "Malware Tracking and Detection"], answer: "Mean Time To Detect" },
+                { question: "Что такое MTTR?", 
+                  options: ["Mean Time To Respond", "Mean Time To Recover", "Maximum Transfer Time Rate", "Malware Threat Tracking Response"], answer: "Mean Time To Respond" },
+
+                // ===== Сети =====
+                { question: "Какой порт по умолчанию используется для SSH?", 
+                  options: ["22", "23", "80", "443"], answer: "22" },
+                { question: "Что покажет команда `ip a`?", 
+                  options: ["Сетевые интерфейсы и их IP-адреса", "Таблицу маршрутизации", "Открытые порты", "DNS-серверы"], answer: "Сетевые интерфейсы и их IP-адреса" },
+                { question: "Какая команда отправит 4 ICMP-пакета на хост 8.8.8.8?", 
+                  options: ["ping -c 4 8.8.8.8", "ping 8.8.8.8 -n 4", "traceroute -c 4 8.8.8.8", "nmap -sn 8.8.8.8"], answer: "ping -c 4 8.8.8.8" },
+                { question: "Какой файл в Linux содержит список DNS-серверов?", 
+                  options: ["/etc/resolv.conf", "/etc/hosts", "/etc/dns.conf", "/etc/network"], answer: "/etc/resolv.conf" },
+                { question: "Что означает сокращение TTL в контексте сетей?", 
+                  options: ["Time To Live", "Total Transfer Limit", "Time To Load", "Traffic Type List"], answer: "Time To Live" },
+                { question: "Какой инструмент используется для анализа трафика в реальном времени?", 
+                  options: ["tcpdump", "ls", "df", "ps"], answer: "tcpdump" },
+                { question: "Что такое ARP?", 
+                  options: ["Протокол определения адреса", "Протокол маршрутизации", "Протокол передачи файлов", "Протокол аутентификации"], answer: "Протокол определения адреса" },
+                { question: "Какой командой в Linux можно посмотреть таблицу маршрутизации?", 
+                  options: ["route -n", "netstat -r", "ip route", "все перечисленные"], answer: "все перечисленные" },
+                { question: "Что такое брутфорс (brute force)?", 
+                  options: ["Перебор паролей", "Сканирование портов", "Отправка спама", "Подмена IP"], answer: "Перебор паролей" },
+                { question: "Какой лог в Linux чаще всего содержит информацию о попытках SSH-входа?", 
+                  options: ["/var/log/auth.log", "/var/log/ssh.log", "/var/log/secure", "/var/log/sshd.log"], answer: "/var/log/auth.log" },
+                { question: "Что означает термин «инцидент» в SOC?", 
+                  options: ["Событие, которое может привести к ущербу безопасности", "Ошибка в конфигурации", "Плановая проверка", "Обновление системы"], answer: "Событие, которое может привести к ущербу безопасности" },
+                { question: "Какая команда используется для просмотра прав sudo?", 
+                  options: ["sudo -l", "sudo -v", "sudo -i", "sudo -s"], answer: "sudo -l" },
+                { question: "Какой командой можно посмотреть список открытых портов?", 
+                  options: ["netstat -tulnp", "ss -tulnp", "lsof -i", "все перечисленные"], answer: "все перечисленные" },
+                { question: "Какой из перечисленных файлов содержит информацию о группах пользователей?", 
+                  options: ["/etc/group", "/etc/passwd", "/etc/shadow", "/etc/gshadow"], answer: "/etc/group" },
+                { question: "Что такое хеширование пароля?", 
+                  options: ["Преобразование пароля в необратимую строку", "Шифрование пароля", "Кодирование base64", "Сжатие пароля"], answer: "Преобразование пароля в необратимую строку" },
+                { question: "Какая команда позволяет изменить права доступа к файлу?", 
+                  options: ["chmod", "chown", "chgrp", "umask"], answer: "chmod" },
+                { question: "Что такое фишинговая ссылка?", 
+                  options: ["Ссылка, ведущая на поддельный сайт", "Ссылка на вирус", "Ссылка на официальный сайт", "Ссылка с ошибкой"], answer: "Ссылка, ведущая на поддельный сайт" },
+                { question: "Какой порт используется для HTTPS?", 
+                  options: ["443", "80", "22", "8080"], answer: "443" },
+                { question: "Какой порт используется для DNS?", 
+                  options: ["53", "25", "110", "143"], answer: "53" },
+                { question: "Что такое MAC-адрес?", 
+                  options: ["Физический адрес сетевого интерфейса", "IP-адрес", "Адрес шлюза", "Адрес DNS"], answer: "Физический адрес сетевого интерфейса" },
+                { question: "Что такое NAT?", 
+                  options: ["Преобразование сетевых адресов", "Network Access Token", "Node Address Table", "Network Authentication Tool"], answer: "Преобразование сетевых адресов" },
+                { question: "Какой протокол используется для защищённой передачи файлов?", 
+                  options: ["SFTP", "FTP", "TFTP", "SMTP"], answer: "SFTP" },
+                { question: "Что такое VLAN?", 
+                  options: ["Виртуальная локальная сеть", "Very Large Area Network", "Virtual Link Access Node", "Variable Length Address Network"], answer: "Виртуальная локальная сеть" },
+                { question: "Какой диапазон адресов является частным (RFC 1918)?", 
+                  options: ["10.0.0.0/8", "8.8.8.0/24", "1.1.1.0/24", "200.0.0.0/8"], answer: "10.0.0.0/8" },
+                { question: "Что такое DNS-туннелирование?", 
+                  options: ["Передача данных через DNS-запросы", "Шифрование DNS", "Защита от DDoS", "Балансировка нагрузки"], answer: "Передача данных через DNS-запросы" },
+                { question: "Какой порт используется для SMTP?", 
+                  options: ["25", "110", "143", "443"], answer: "25" },
+                { question: "Что такое three-way handshake в TCP?", 
+                  options: ["SYN, SYN-ACK, ACK", "ACK, SYN, FIN", "SYN, ACK, FIN", "PSH, SYN, ACK"], answer: "SYN, SYN-ACK, ACK" },
+                { question: "Что такое subnet mask?", 
+                  options: ["Маска подсети", "Тип IP-адреса", "Протокол маршрутизации", "Сетевой экран"], answer: "Маска подсети" },
+                { question: "Что такое шлюз по умолчанию (default gateway)?", 
+                  options: ["Устройство для выхода в другие сети", "DNS-сервер", "DHCP-сервер", "Прокси-сервер"], answer: "Устройство для выхода в другие сети" },
+
+                // ===== Windows / Active Directory =====
+                { question: "Какой командой в Windows посмотреть сетевые настройки?", 
+                  options: ["ipconfig", "ifconfig", "netstat", "ip a"], answer: "ipconfig" },
+                { question: "Какой лог Windows содержит события безопасности?", 
+                  options: ["Security", "Application", "System", "Setup"], answer: "Security" },
+                { question: "Что такое Event ID 4624 в Windows?", 
+                  options: ["Успешный вход в систему", "Неудачная попытка входа", "Создание процесса", "Изменение учётной записи"], answer: "Успешный вход в систему" },
+                { question: "Что такое Event ID 4625 в Windows?", 
+                  options: ["Неудачная попытка входа", "Успешный вход", "Остановка службы", "Изменение реестра"], answer: "Неудачная попытка входа" },
+                { question: "Что такое Active Directory?", 
+                  options: ["Служба каталогов Microsoft", "Тип firewall", "Антивирус", "Протокол маршрутизации"], answer: "Служба каталогов Microsoft" },
+                { question: "Что такое Kerberos?", 
+                  options: ["Протокол аутентификации", "Протокол шифрования", "Тип атаки", "Сетевой протокол"], answer: "Протокол аутентификации" },
+                { question: "Что такое Pass-the-Hash атака?", 
+                  options: ["Использование хеша пароля для аутентификации", "Кража пароля в открытом виде", "Подбор пароля", "Перехват сессии"], answer: "Использование хеша пароля для аутентификации" },
+                { question: "Что такое Golden Ticket атака?", 
+                  options: ["Подделка Kerberos TGT", "Кража золотого сертификата", "Атака на DNS", "Перехват трафика"], answer: "Подделка Kerberos TGT" },
+                { question: "Что такое SMB?", 
+                  options: ["Протокол для обмена файлами в Windows", "Протокол шифрования", "Тип VPN", "Протокол маршрутизации"], answer: "Протокол для обмена файлами в Windows" },
+                { question: "Какой порт использует RDP?", 
+                  options: ["3389", "22", "445", "139"], answer: "3389" },
+                { question: "Что такое PowerShell?", 
+                  options: ["Среда автоматизации и скриптовый язык Microsoft", "Антивирус", "Текстовый редактор", "Сетевой протокол"], answer: "Среда автоматизации и скриптовый язык Microsoft" },
+                { question: "Какой командлет PowerShell покажет запущенные процессы?", 
+                  options: ["Get-Process", "Get-Service", "Get-EventLog", "Get-Command"], answer: "Get-Process" },
+                { question: "Что такое WMI?", 
+                  options: ["Windows Management Instrumentation", "Web Management Interface", "Windows Malware Inspector", "Wireless Module Interface"], answer: "Windows Management Instrumentation" },
+                { question: "Что такое Sysmon?", 
+                  options: ["Инструмент мониторинга системы от Microsoft", "Антивирус", "Тип firewall", "Скриптовый язык"], answer: "Инструмент мониторинга системы от Microsoft" },
+
+                // ===== Дополнительно =====
+                { question: "Что такое honeypot?", 
+                  options: ["Приманка для атакующих", "Медовый пароль", "Тип шифрования", "Сетевой протокол"], answer: "Приманка для атакующих" },
+                { question: "Что такое sandbox?", 
+                  options: ["Изолированная среда для анализа", "Тип firewall", "Виртуальная машина", "Песочница для игр"], answer: "Изолированная среда для анализа" },
+                { question: "Что такое reverse shell?", 
+                  options: ["Обратное подключение к атакующему", "Тип оболочки Linux", "Шифрование трафика", "Сетевой протокол"], answer: "Обратное подключение к атакующему" },
+                { question: "Что такое lateral movement?", 
+                  options: ["Перемещение по сети после компрометации", "Сканирование портов", "Фишинг", "DDoS"], answer: "Перемещение по сети после компрометации" },
+                { question: "Что такое privilege escalation?", 
+                  options: ["Повышение привилегий", "Понижение прав", "Удаление пользователя", "Установка ПО"], answer: "Повышение привилегий" },
+                { question: "Что такое persistence в контексте атак?", 
+                  options: ["Закрепление в системе", "Тип шифрования", "Сетевой протокол", "Тип firewall"], answer: "Закрепление в системе" },
+                { question: "Что такое command and control (C2)?", 
+                  options: ["Сервер управления вредоносным ПО", "Тип firewall", "Протокол маршрутизации", "Антивирус"], answer: "Сервер управления вредоносным ПО" },
+                { question: "Что такое exfiltration?", 
+                  options: ["Вынос данных из сети", "Сканирование сети", "Шифрование данных", "Сжатие данных"], answer: "Вынос данных из сети" },
+                { question: "Что такое OSINT?", 
+                  options: ["Open Source Intelligence", "Online Security Investigation Tool", "Operating System Intelligence", "Open Security Integration Test"], answer: "Open Source Intelligence" },
+                { question: "Что такое dark web?", 
+                  options: ["Скрытая часть интернета", "Тёмная тема браузера", "Тип VPN", "Антивирус"], answer: "Скрытая часть интернета" },
+                { question: "Что такое bug bounty?", 
+                  options: ["Программа вознаграждения за найденные уязвимости", "Тип атаки", "Антивирусная база", "Ошибка в коде"], answer: "Программа вознаграждения за найденные уязвимости" },
+                { question: "Что такое penetration testing?", 
+                  options: ["Тестирование на проникновение", "Установка патчей", "Резервное копирование", "Мониторинг сети"], answer: "Тестирование на проникновение" },
+                { question: "Что такое red team и blue team?", 
+                  options: ["Команды атакующих и защитников", "Типы firewall", "Сетевые протоколы", "Антивирусы"], answer: "Команды атакующих и защитников" },
+                { question: "Что такое purple team?", 
+                  options: ["Совместная работа red и blue команд", "Тип firewall", "Антивирус", "Сетевой протокол"], answer: "Совместная работа red и blue команд" }
+            ];
+
+            // ================= РАНГИ =================
+            const RANKS = [
+                { name: 'Interna', minScore: 0, maxScore: 4 },
+                { name: 'Junior', minScore: 5, maxScore: 9 },
+                { name: 'Middle', minScore: 10, maxScore: 14 },
+                { name: 'Senior', minScore: 15, maxScore: 20 }
+            ];
+
+            // ================= СОСТОЯНИЕ =================
+            let currentQuestions = [];
+            let currentIndex = 0;
+            let score = 0;
+            let answered = false;
+            let currentRank = 'Interna';
+
+            // DOM элементы
+            const startScreen = document.getElementById('startScreen');
+            const quizScreen = document.getElementById('quizScreen');
+            const resultScreen = document.getElementById('resultScreen');
+            const startBtn = document.getElementById('startBtn');
+            const restartBtn = document.getElementById('restartBtn');
+            const questionText = document.getElementById('questionText');
+            const optionsGrid = document.getElementById('optionsGrid');
+            const answerInput = document.getElementById('answerInput');
+            const submitAnswerBtn = document.getElementById('submitAnswerBtn');
+            const feedbackMessage = document.getElementById('feedbackMessage');
+            const currentQNumSpan = document.getElementById('currentQNum');
+            const totalQNumSpan = document.getElementById('totalQNum');
+            const totalQuestionsCount = document.getElementById('totalQuestionsCount');
+            const currentRankStart = document.getElementById('currentRankStart');
+            const rankLabelSmall = document.getElementById('rankLabelSmall');
+            const rankProgressFill = document.getElementById('rankProgressFill');
+            const finalRankDisplay = document.getElementById('finalRankDisplay');
+            const finalScoreDisplay = document.getElementById('finalScoreDisplay');
+
+            // ================= ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =================
+            function shuffleArray(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            }
+
+            function pickRandomQuestions(count = 20) {
+                const shuffled = shuffleArray([...questionBank]);
+                return shuffled.slice(0, count);
+            }
+
+            function getRankByScore(correctCount, total = 20) {
+                if (correctCount <= 4) return 'Interna';
+                if (correctCount <= 9) return 'Junior';
+                if (correctCount <= 14) return 'Middle';
+                return 'Senior';
+            }
+
+            function updateRankDisplay() {
+                const rank = getRankByScore(score, 20);
+                currentRank = rank;
+                if (currentRankStart) currentRankStart.textContent = rank;
+                if (rankLabelSmall) rankLabelSmall.textContent = rank;
+
+                let fillPercent = 0;
+                if (rank === 'Interna') fillPercent = 15;
+                else if (rank === 'Junior') fillPercent = 40;
+                else if (rank === 'Middle') fillPercent = 70;
+                else if (rank === 'Senior') fillPercent = 100;
+                if (rankProgressFill) rankProgressFill.style.width = fillPercent + '%';
+            }
+
+            function renderQuestion() {
+                if (currentIndex >= currentQuestions.length) {
+                    showResult();
+                    return;
+                }
+
+                const q = currentQuestions[currentIndex];
+                questionText.textContent = q.question;
+                optionsGrid.innerHTML = '';
+                q.options.forEach(opt => {
+                    const div = document.createElement('div');
+                    div.className = 'option-item';
+                    div.textContent = opt;
+                    optionsGrid.appendChild(div);
+                });
+
+                currentQNumSpan.textContent = currentIndex + 1;
+                totalQNumSpan.textContent = currentQuestions.length;
+                answerInput.value = '';
+                answerInput.disabled = false;
+                feedbackMessage.textContent = '';
+                feedbackMessage.className = 'feedback';
+                answered = false;
+                submitAnswerBtn.disabled = false;
+                answerInput.focus();
+
+                updateRankDisplay();
+            }
+
+            function handleSubmit() {
+                if (answered) return;
+                if (currentIndex >= currentQuestions.length) return;
+
+                const userAnswer = answerInput.value.trim();
+                if (userAnswer === '') {
+                    feedbackMessage.textContent = 'Введи ответ';
+                    feedbackMessage.className = 'feedback incorrect';
+                    return;
+                }
+
+                const q = currentQuestions[currentIndex];
+                const isCorrect = userAnswer.toLowerCase() === q.answer.toLowerCase();
+
+                if (isCorrect) {
+                    score++;
+                    feedbackMessage.textContent = '✅ Верно!';
+                    feedbackMessage.className = 'feedback correct';
+                } else {
+                    feedbackMessage.textContent = `❌ Неверно. Правильный ответ: ${q.answer}`;
+                    feedbackMessage.className = 'feedback incorrect';
+                }
+
+                answered = true;
+                answerInput.disabled = true;
+                submitAnswerBtn.disabled = true;
+
+                updateRankDisplay();
+
+                setTimeout(() => {
+                    currentIndex++;
+                    if (currentIndex < currentQuestions.length) {
+                        renderQuestion();
+                    } else {
+                        showResult();
+                    }
+                }, 1300);
+            }
+
+            function showResult() {
+                quizScreen.classList.add('hidden');
+                resultScreen.classList.remove('hidden');
+
+                const finalRank = getRankByScore(score, currentQuestions.length);
+                finalRankDisplay.textContent = finalRank;
+                finalScoreDisplay.textContent = `${score} / ${currentQuestions.length}`;
+                currentRankStart.textContent = finalRank;
+            }
+
+            function startQuiz() {
+                currentQuestions = pickRandomQuestions(20);
+                currentIndex = 0;
+                score = 0;
+                answered = false;
+                currentRank = 'Interna';
+
+                totalQuestionsCount.textContent = currentQuestions.length;
+                totalQNumSpan.textContent = currentQuestions.length;
+
+                startScreen.classList.add('hidden');
+                resultScreen.classList.add('hidden');
+                quizScreen.classList.remove('hidden');
+
+                feedbackMessage.textContent = '';
+                feedbackMessage.className = 'feedback';
+                answerInput.disabled = false;
+                submitAnswerBtn.disabled = false;
+
+                renderQuestion();
+                updateRankDisplay();
+            }
+
+            startBtn.addEventListener('click', startQuiz);
+            restartBtn.addEventListener('click', startQuiz);
+
+            submitAnswerBtn.addEventListener('click', handleSubmit);
+            answerInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSubmit();
+                }
+            });
+
+            totalQuestionsCount.textContent = '20';
+            totalQNumSpan.textContent = '20';
+            currentRankStart.textContent = 'Interna';
+            if (rankProgressFill) rankProgressFill.style.width = '0%';
+        })();
+    </script>
+</body>
+</html>
